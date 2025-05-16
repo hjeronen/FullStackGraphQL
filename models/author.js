@@ -11,6 +11,11 @@ const schema = new mongoose.Schema({
   },
   born: {
     type: Number,
+    validate: {
+      validator: Number.isInteger,
+      message: '{VALUE} is not an integer value',
+    },
+    min: [0, 'Born year must be a positive integer'],
   },
 })
 

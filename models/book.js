@@ -10,6 +10,11 @@ const schema = new mongoose.Schema({
   },
   published: {
     type: Number,
+    validate: {
+      validator: Number.isInteger,
+      message: '{VALUE} is not an integer value',
+    },
+    min: [0, 'Published year must be a positive integer'],
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,

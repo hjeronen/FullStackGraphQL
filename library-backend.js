@@ -3,6 +3,7 @@ const { startStandaloneServer } = require('@apollo/server/standalone')
 const { v1: uuid } = require('uuid')
 require('dotenv').config()
 const { authors, books } = require('./data')
+const { GraphQLError } = require('graphql')
 
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
@@ -87,6 +88,35 @@ const typeDefs = `
   }
 `
 
+const getErrorCode = (message) => {
+  switch (message) {
+    case 'Author validation failed':
+      return 'AUTHOR_VALIDATION_FAILED'
+    case 'Book validation failed':
+      return 'BOOK_VALIDATION_FAILED'
+    default:
+      return 'UNKNOWN_ERROR'
+  }
+}
+
+const handleError = (error) => {
+  if (error.name === 'ValidationError') {
+    throw new GraphQLError(error.message, {
+      extensions: {
+        code: getErrorCode(error._message),
+        invalidArgs: Object.keys(error.errors),
+        error,
+      },
+    })
+  }
+  throw new GraphQLError('An unexpected error occurred', {
+    extensions: {
+      code: 'INTERNAL_SERVER_ERROR',
+      error,
+    },
+  })
+}
+
 const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
@@ -112,32 +142,41 @@ const resolvers = {
     allAuthors: () => Author.find({}).populate('bookCount').exec(),
   },
   Mutation: {
-    addBook: async (_, { title, author, published, genres }) => {
-      let bookAuthor = await Author.find({ name: author })[0]
-      if (!bookAuthor) {
-        bookAuthor = new Author({
-          name: author,
+    addBook: async (_, args) => {
+      try {
+        const { title, author, published, genres } = args
+        let bookAuthor = await Author.findOne({ name: author })
+        if (!bookAuthor) {
+          bookAuthor = new Author({
+            name: author,
+          })
+          await bookAuthor.save()
+        }
+        const book = new Book({
+          id: uuid(),
+          title,
+          author: bookAuthor,
+          published,
+          genres,
         })
-        await bookAuthor.save()
+        await book.save()
+        return book
+      } catch (error) {
+        handleError(error)
       }
-      const book = new Book({
-        id: uuid(),
-        title,
-        author: bookAuthor,
-        published,
-        genres,
-      })
-      await book.save()
-      return book
     },
     editAuthor: async (_root, args) => {
-      const author = await Author.findOne({ name: args.name })
-      if (!author) return null
+      try {
+        const author = await Author.findOne({ name: args.name })
+        if (!author) return null
 
-      author.born = args.setBornTo
-      await author.save()
+        author.born = args.setBornTo
+        await author.save()
 
-      return author
+        return author
+      } catch (error) {
+        handleError(error)
+      }
     },
   },
   Author: {
