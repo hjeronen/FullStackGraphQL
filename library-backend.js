@@ -1,6 +1,5 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
-const { v1: uuid } = require('uuid')
 require('dotenv').config()
 const { authors, books } = require('./data')
 const { GraphQLError } = require('graphql')
@@ -153,7 +152,6 @@ const resolvers = {
           await bookAuthor.save()
         }
         const book = new Book({
-          id: uuid(),
           title,
           author: bookAuthor,
           published,
