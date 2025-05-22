@@ -15,10 +15,12 @@ const schema = new mongoose.Schema({
       message: '{VALUE} is not an integer value',
     },
     min: [0, 'Published year must be a positive integer'],
+    required: true,
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Author',
+    required: true,
   },
   genres: [{ type: String }],
 })

@@ -15,5 +15,6 @@ MONGODB_URL=mongodb://username:password@localhost:3456/database npm run dev
 MONGODB_DATABASE=database
 MONGODB_USER=username
 MONGODB_PASSWORD=password
+JWT_SECRET=jwtsecret
 PORT=4000
 ```
