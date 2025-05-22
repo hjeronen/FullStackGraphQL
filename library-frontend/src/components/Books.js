@@ -3,7 +3,7 @@ import { ALL_BOOKS } from '../queries'
 
 const Books = () => {
   const result = useQuery(ALL_BOOKS, {
-    pollInterval: 2000
+    pollInterval: 2000,
   })
 
   if (result.loading) {
@@ -21,10 +21,10 @@ const Books = () => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {result.data.allBooks.map((a) => (
+          {result?.data?.allBooks?.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
-              <td>{a.author}</td>
+              <td>{a.author?.name}</td>
               <td>{a.published}</td>
             </tr>
           ))}
