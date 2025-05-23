@@ -8,6 +8,7 @@ import {
   createHttpLink,
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
+import './styles.css'
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('library-user-token')

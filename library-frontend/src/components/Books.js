@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { ALL_BOOKS } from '../queries'
 import GenreButtons from './GenreButtons'
+import BookTable from './BookTable'
 
 const Books = () => {
   const [genre, setGenre] = useState(null)
@@ -21,22 +22,7 @@ const Books = () => {
       <div>
         in genre <strong>{genre || 'all'}</strong>
       </div>
-      <table>
-        <tbody>
-          <tr>
-            <th></th>
-            <th>author</th>
-            <th>published</th>
-          </tr>
-          {result?.data?.allBooks?.map((a) => (
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author?.name}</td>
-              <td>{a.published}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <BookTable books={result?.data?.allBooks} />
       <GenreButtons setGenre={setGenre} />
     </div>
   )

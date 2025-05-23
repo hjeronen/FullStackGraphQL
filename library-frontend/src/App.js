@@ -12,10 +12,11 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Notify from './components/Notify'
+import Recommendations from './components/Recommendations'
 
 const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
-  const [token, setToken] = useState(null)
+  const [token, setToken] = useState(localStorage.getItem('library-user-token'))
 
   const client = useApolloClient()
 
@@ -54,6 +55,9 @@ const App = () => {
             <Link style={padding} to="/add">
               add book
             </Link>
+            <Link style={padding} to="/recommendations">
+              recommend
+            </Link>
             <button onClick={logout}>logout</button>
           </>
         )}
@@ -84,6 +88,16 @@ const App = () => {
           path="/login"
           element={
             <LoginForm setToken={setToken} setErrorMessage={showErrorMessage} />
+          }
+        />
+        <Route
+          path="/recommendations"
+          element={
+            token ? (
+              <Recommendations setErrorMessage={showErrorMessage} />
+            ) : (
+              <Navigate replace to="/login" />
+            )
           }
         />
       </Routes>

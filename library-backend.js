@@ -114,6 +114,10 @@ const typeDefs = `
       username: String!
       password: String!
     ): Token
+    editUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
   }
 `
 
@@ -262,6 +266,21 @@ const resolvers = {
         }
 
         return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
+      } catch (error) {
+        handleError(error)
+      }
+    },
+    editUser: async (_, args, { currentUser }) => {
+      try {
+        authenticateUser(currentUser)
+
+        const user = await User.findOne({ username: args.username })
+        if (!user) return null
+
+        user.favoriteGenre = args.favoriteGenre
+        await user.save()
+
+        return user
       } catch (error) {
         handleError(error)
       }
