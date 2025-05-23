@@ -232,7 +232,7 @@ const resolvers = {
         author.born = args.setBornTo
         await author.save()
 
-        return author
+        return author.populate('bookCount')
       } catch (error) {
         handleError(error)
       }
