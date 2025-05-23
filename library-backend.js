@@ -90,6 +90,7 @@ const typeDefs = `
     bookCount: Int!
     authorCount: Int!
     allBooks(author: String, genre: String): [Book]!
+    allGenres: [String!]!
     allAuthors: [Author!]!
     me: User
   }
@@ -169,8 +170,8 @@ const authenticateUser = (currentUser) => {
 
 const resolvers = {
   Query: {
-    bookCount: () => Book.collection.countDocuments(),
-    authorCount: () => Author.collection.countDocuments(),
+    bookCount: async () => Book.collection.countDocuments(),
+    authorCount: async () => Author.collection.countDocuments(),
     allBooks: async (_, args) => {
       const query = {}
 
@@ -189,7 +190,8 @@ const resolvers = {
 
       return Book.find(query).populate('author').exec()
     },
-    allAuthors: () => Author.find({}).populate('bookCount').exec(),
+    allGenres: async () => Book.distinct('genres'),
+    allAuthors: async () => Author.find({}).populate('bookCount').exec(),
     me: (_root, _args, { currentUser }) => {
       return currentUser
     },
