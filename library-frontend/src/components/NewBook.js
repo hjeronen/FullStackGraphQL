@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { CREATE_BOOK } from '../queries'
+import { ERROR } from './Notify'
 
-const NewBook = ({ setErrorMessage }) => {
+const NewBook = ({ showNotification }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
@@ -11,7 +12,10 @@ const NewBook = ({ setErrorMessage }) => {
 
   const [createBook] = useMutation(CREATE_BOOK, {
     onError: (error) => {
-      setErrorMessage(error.graphQLErrors[0].message)
+      showNotification({
+        message: error.graphQLErrors[0].message,
+        type: ERROR,
+      })
     },
   })
 

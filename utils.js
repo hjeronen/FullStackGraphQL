@@ -61,4 +61,5 @@ const authenticateUser = (currentUser) => {
 module.exports = {
   handleError,
   authenticateUser,
+  LOGIN_ERROR,
 }

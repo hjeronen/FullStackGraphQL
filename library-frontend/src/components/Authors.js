@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { ALL_AUTHORS, UPDATE_AUTHOR } from '../queries'
+import { ERROR } from './Notify'
 
-const Authors = ({ userToken, setErrorMessage }) => {
+const Authors = ({ userToken, showNotification }) => {
   const [name, setName] = useState('')
   const [born, setBorn] = useState('')
 
   const [updateAuthor] = useMutation(UPDATE_AUTHOR, {
     onError: (error) => {
-      setErrorMessage(error.graphQLErrors[0].message)
+      showNotification({ message: error.graphQLErrors[0].message, type: ERROR })
     },
   })
 

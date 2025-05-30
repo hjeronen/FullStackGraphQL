@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useApolloClient } from '@apollo/client'
 import { LOGIN } from '../queries'
+import { ERROR } from './Notify'
 
-const LoginForm = ({ setToken, setErrorMessage }) => {
+const LoginForm = ({ setToken, showNotification }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -12,7 +13,7 @@ const LoginForm = ({ setToken, setErrorMessage }) => {
 
   const [login, result] = useMutation(LOGIN, {
     onError: (error) => {
-      setErrorMessage(error.graphQLErrors[0].message)
+      showNotification({ message: error.graphQLErrors[0].message, type: ERROR })
     },
   })
 

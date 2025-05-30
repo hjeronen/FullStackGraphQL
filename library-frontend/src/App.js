@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client'
 import {
   BrowserRouter as Router,
   Navigate,
@@ -13,21 +13,32 @@ import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Notify from './components/Notify'
 import Recommendations from './components/Recommendations'
+import { BOOK_ADDED } from './queries'
 
 const App = () => {
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState(null)
   const [token, setToken] = useState(localStorage.getItem('library-user-token'))
 
   const client = useApolloClient()
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const bookAdded = data.data.bookAdded
+      showNotification({
+        message: `New book added: ${bookAdded.title} by ${bookAdded.author.name}`,
+        type: 'success',
+      })
+    },
+  })
 
   const padding = {
     padding: 5,
   }
 
-  const showErrorMessage = (message) => {
-    setErrorMessage(message)
+  const showNotification = (notification) => {
+    setNotification(notification)
     setTimeout(() => {
-      setErrorMessage(null)
+      setNotification(null)
     }, 5000)
   }
 
@@ -63,14 +74,14 @@ const App = () => {
         )}
       </div>
       <div style={padding}>
-        <Notify errorMessage={errorMessage} />
+        <Notify {...notification} />
       </div>
       <Routes>
         <Route path="/" element={<h2>Library app</h2>} />
         <Route
           path="/authors"
           element={
-            <Authors userToken={token} setErrorMessage={showErrorMessage} />
+            <Authors userToken={token} showNotification={showNotification} />
           }
         />
         <Route path="/books" element={<Books />} />
@@ -78,7 +89,7 @@ const App = () => {
           path="/add"
           element={
             token ? (
-              <NewBook setErrorMessage={showErrorMessage} />
+              <NewBook showNotification={showNotification} />
             ) : (
               <Navigate replace to="/login" />
             )
@@ -87,17 +98,16 @@ const App = () => {
         <Route
           path="/login"
           element={
-            <LoginForm setToken={setToken} setErrorMessage={showErrorMessage} />
+            <LoginForm
+              setToken={setToken}
+              showNotification={showNotification}
+            />
           }
         />
         <Route
           path="/recommendations"
           element={
-            token ? (
-              <Recommendations setErrorMessage={showErrorMessage} />
-            ) : (
-              <Navigate replace to="/login" />
-            )
+            token ? <Recommendations /> : <Navigate replace to="/login" />
           }
         />
       </Routes>
