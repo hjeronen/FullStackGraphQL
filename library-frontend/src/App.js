@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useApolloClient, useSubscription } from '@apollo/client'
+import { useApolloClient } from '@apollo/client'
 import {
   BrowserRouter as Router,
   Navigate,
@@ -13,23 +13,26 @@ import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Notify from './components/Notify'
 import Recommendations from './components/Recommendations'
-import { BOOK_ADDED } from './queries'
+
+export const updateCache = (cache, query, addedBook) => {
+  cache.updateQuery(query, (data) => {
+    const books = data?.allBooks || []
+
+    if (books?.find( book => book.title === addedBook.title)) {
+      return { allBooks: books }
+    }
+
+    return {
+      allBooks: books.concat(addedBook),
+    }
+  })
+}
 
 const App = () => {
   const [notification, setNotification] = useState(null)
   const [token, setToken] = useState(localStorage.getItem('library-user-token'))
 
   const client = useApolloClient()
-
-  useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
-      const bookAdded = data.data.bookAdded
-      showNotification({
-        message: `New book added: ${bookAdded.title} by ${bookAdded.author.name}`,
-        type: 'success',
-      })
-    },
-  })
 
   const padding = {
     padding: 5,
@@ -46,7 +49,7 @@ const App = () => {
     setToken(null)
     localStorage.clear()
     client.resetStore()
-  }
+  };
 
   return (
     <Router>
@@ -84,7 +87,7 @@ const App = () => {
             <Authors userToken={token} showNotification={showNotification} />
           }
         />
-        <Route path="/books" element={<Books />} />
+        <Route path="/books" element={<Books showNotification={showNotification} />} />
         <Route
           path="/add"
           element={

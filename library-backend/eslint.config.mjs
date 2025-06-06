@@ -26,15 +26,5 @@ export default [
       'arrow-spacing': ['error', { before: true, after: true }],
     },
   },
-  {
-    ignores: [
-      'dist/**',
-      'build/**',
-      'coverage/**',
-      'node_modules/**',
-      'library-frontend/**',
-      'public/**',
-    ],
-  },
   eslintConfigPrettier,
 ]

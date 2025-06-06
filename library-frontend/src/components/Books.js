@@ -1,15 +1,28 @@
 import { useState } from 'react'
-import { useQuery } from '@apollo/client'
-import { ALL_BOOKS } from '../queries'
+import { useQuery, useSubscription } from '@apollo/client'
+import { ALL_BOOKS, BOOK_ADDED } from '../queries'
+import { updateCache } from '../App'
 import GenreButtons from './GenreButtons'
 import BookTable from './BookTable'
 
-const Books = () => {
+const Books = ({ showNotification }) => {
   const [genre, setGenre] = useState(null)
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const bookAdded = data.data.bookAdded
+
+      updateCache(client.cache, { query: ALL_BOOKS, variables: { genre: null } }, bookAdded)
+
+      showNotification({
+        message: `New book added: ${bookAdded.title} by ${bookAdded.author.name}`,
+        type: 'success',
+      })
+    },
+  })
 
   const result = useQuery(ALL_BOOKS, {
     variables: { genre },
-    pollInterval: 2000,
   })
 
   if (result.loading) {
