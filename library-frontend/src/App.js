@@ -58,8 +58,11 @@ const App = () => {
   useSubscription(BOOK_ADDED, {
     onData: ({ data, client }) => {
       const bookAdded = data.data.bookAdded
+      const genresToUpdate = bookAdded.genres?.concat(null) || [null]
 
-      updateCache(client.cache, { query: ALL_BOOKS, variables: { genre: null } }, bookAdded, 'allBooks')
+      genresToUpdate.forEach((genre) => {
+        updateCache(client.cache, { query: ALL_BOOKS, variables: { genre } }, bookAdded, 'allBooks')
+      })
       updateCache(client.cache, { query: ALL_GENRES }, bookAdded, 'allGenres')
       updateCache(client.cache, { query: ALL_AUTHORS }, bookAdded, 'allAuthors')
 
