@@ -2,9 +2,7 @@ import { useQuery } from '@apollo/client'
 import { ALL_GENRES } from '../queries'
 
 const GenreButtons = ({ setGenre }) => {
-  const result = useQuery(ALL_GENRES, {
-    pollInterval: 2000,
-  })
+  const result = useQuery(ALL_GENRES)
 
   return (
     <div>

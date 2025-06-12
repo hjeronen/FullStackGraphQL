@@ -9,13 +9,21 @@ const Authors = ({ userToken, showNotification }) => {
 
   const [updateAuthor] = useMutation(UPDATE_AUTHOR, {
     onError: (error) => {
-      showNotification({ message: error.graphQLErrors[0].message, type: ERROR })
+      showNotification({ message: error.graphQLErrors[0]?.message, type: ERROR })
+    },
+    update: (cache, response) => {
+      const updatedAuthor = response.data.editAuthor
+
+      cache.updateQuery({ query: ALL_AUTHORS }, (data) => {
+        const allAuthors = data?.allAuthors || []
+        return {
+          allAuthors: allAuthors.map(author => author.name !== updatedAuthor.name ? author : updatedAuthor)
+        }
+      })
     },
   })
 
-  const result = useQuery(ALL_AUTHORS, {
-    pollInterval: 2000,
-  })
+  const result = useQuery(ALL_AUTHORS)
 
   if (result.loading) {
     return <div>loading...</div>

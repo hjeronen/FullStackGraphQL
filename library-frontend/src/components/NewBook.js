@@ -14,16 +14,8 @@ const NewBook = ({ showNotification }) => {
   const [createBook] = useMutation(CREATE_BOOK, {
     onError: (error) => {
       showNotification({
-        message: error.graphQLErrors[0].message,
+        message: error.graphQLErrors[0]?.message,
         type: ERROR,
-      })
-    },
-    update: (cache, response) => {
-      const bookAdded = response.data.addBook
-      updateCache(cache, { query: ALL_BOOKS, variables: { genre: null } }, bookAdded)
-      showNotification({
-        message: `New book added: ${bookAdded.title} by ${bookAdded.author.name}`,
-        type: 'success',
       })
     },
   })
