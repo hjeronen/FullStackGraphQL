@@ -31,7 +31,7 @@ const httpLink = createHttpLink({
 const wsLink = new GraphQLWsLink(
   createClient({
     url: 'ws://localhost:4000',
-  })
+  }),
 )
 
 const splitLink = split(
@@ -43,7 +43,7 @@ const splitLink = split(
     )
   },
   wsLink,
-  authLink.concat(httpLink)
+  authLink.concat(httpLink),
 )
 
 const client = new ApolloClient({
@@ -54,5 +54,5 @@ const client = new ApolloClient({
 ReactDOM.createRoot(document.getElementById('root')).render(
   <ApolloProvider client={client}>
     <App />
-  </ApolloProvider>
+  </ApolloProvider>,
 )
