@@ -130,9 +130,8 @@ const resolvers = {
     },
   },
   Author: {
-    bookCount: async (parent) => {
-      return await Book.countDocuments({ author: parent._id });
-    },
+    bookCount: ({ _id }, _params, context) =>
+      context.loaders.bookCount.load(_id),
   },
 }
 

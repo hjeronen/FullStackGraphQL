@@ -11,6 +11,9 @@ const http = require('http')
 const { WebSocketServer } = require('ws')
 const { useServer } = require('graphql-ws/lib/use/ws')
 
+const DataLoader = require('dataloader')
+const { authorLoader } = require('./loaders')
+
 require('dotenv').config()
 const { authors, books } = require('./data')
 const typeDefs = require('./schema')
@@ -74,8 +77,20 @@ const start = async () => {
     path: '/',
   })
 
+  const loaders = {
+    bookCount: new DataLoader((keys) =>
+      authorLoader.batchBookCount(keys, { Book }),
+    ),
+  }
+
+  const context = async () => {
+    return {
+      loaders,
+    }
+  }
+
   const schema = makeExecutableSchema({ typeDefs, resolvers })
-  const serverCleanup = useServer({ schema }, wsServer)
+  const serverCleanup = useServer({ schema, context }, wsServer)
 
   const server = new ApolloServer({
     schema,
@@ -91,6 +106,7 @@ const start = async () => {
         },
       },
     ],
+    context,
   })
 
   await server.start()
@@ -105,18 +121,19 @@ const start = async () => {
         if (auth && auth.startsWith('Bearer ')) {
           const decodedToken = jwt.verify(
             auth.substring(7),
-            process.env.JWT_SECRET
+            process.env.JWT_SECRET,
           )
           const currentUser = await User.findById(decodedToken.id)
-          return { currentUser }
+          return { currentUser, loaders }
         }
+        return { loaders }
       },
-    })
+    }),
   )
 
   const PORT = process.env.PORT || 4000
   httpServer.listen(PORT, () =>
-    console.log(`Server is now running on http://localhost:${PORT}`)
+    console.log(`Server is now running on http://localhost:${PORT}`),
   )
 }
 start()

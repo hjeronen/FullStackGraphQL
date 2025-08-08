@@ -20,7 +20,7 @@ export const updateCache = (cache, query, addedBook, queryName) => {
     if (queryName === 'allBooks' && data?.allBooks) {
       const books = data?.allBooks || []
 
-      if (books?.find(book => book.title === addedBook.title)) {
+      if (books?.find((book) => book.title === addedBook.title)) {
         return { allBooks: books }
       }
 
@@ -31,16 +31,18 @@ export const updateCache = (cache, query, addedBook, queryName) => {
       const genres = data?.allGenres || []
 
       return {
-        allGenres: genres.concat(addedBook.genres.filter(genre => !genres.includes(genre))),
+        allGenres: genres.concat(
+          addedBook.genres.filter((genre) => !genres.includes(genre)),
+        ),
       }
     } else if (queryName === 'allAuthors' && data?.allAuthors) {
       const authors = data?.allAuthors || []
 
       const author = addedBook.author
-      const alreadyExists = authors.find(a => a.name === author.name)
+      const alreadyExists = authors.find((a) => a.name === author.name)
       const allAuthors = alreadyExists
-      ? authors.map(a => a.name !== author.name ? a : author)
-      : authors.concat(author)
+        ? authors.map((a) => (a.name !== author.name ? a : author))
+        : authors.concat(author)
 
       return {
         allAuthors: allAuthors,
@@ -61,7 +63,12 @@ const App = () => {
       const genresToUpdate = bookAdded.genres?.concat(null) || [null]
 
       genresToUpdate.forEach((genre) => {
-        updateCache(client.cache, { query: ALL_BOOKS, variables: { genre } }, bookAdded, 'allBooks')
+        updateCache(
+          client.cache,
+          { query: ALL_BOOKS, variables: { genre } },
+          bookAdded,
+          'allBooks',
+        )
       })
       updateCache(client.cache, { query: ALL_GENRES }, bookAdded, 'allGenres')
       updateCache(client.cache, { query: ALL_AUTHORS }, bookAdded, 'allAuthors')
@@ -88,7 +95,7 @@ const App = () => {
     setToken(null)
     localStorage.clear()
     client.resetStore()
-  };
+  }
 
   return (
     <Router>

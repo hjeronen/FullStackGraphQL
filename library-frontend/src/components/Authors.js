@@ -9,7 +9,10 @@ const Authors = ({ userToken, showNotification }) => {
 
   const [updateAuthor] = useMutation(UPDATE_AUTHOR, {
     onError: (error) => {
-      showNotification({ message: error.graphQLErrors[0]?.message, type: ERROR })
+      showNotification({
+        message: error.graphQLErrors[0]?.message,
+        type: ERROR,
+      })
     },
     update: (cache, response) => {
       const updatedAuthor = response.data.editAuthor
@@ -17,7 +20,9 @@ const Authors = ({ userToken, showNotification }) => {
       cache.updateQuery({ query: ALL_AUTHORS }, (data) => {
         const allAuthors = data?.allAuthors || []
         return {
-          allAuthors: allAuthors.map(author => author.name !== updatedAuthor.name ? author : updatedAuthor)
+          allAuthors: allAuthors.map((author) =>
+            author.name !== updatedAuthor.name ? author : updatedAuthor,
+          ),
         }
       })
     },
@@ -52,7 +57,7 @@ const Authors = ({ userToken, showNotification }) => {
             <th>born</th>
             <th>books</th>
           </tr>
-          {result.data.allAuthors.map((a) => (
+          {result?.data?.allAuthors?.map((a) => (
             <tr key={a.name}>
               <td>{a.name}</td>
               <td>{a.born}</td>
@@ -67,9 +72,9 @@ const Authors = ({ userToken, showNotification }) => {
           <form onSubmit={submit}>
             <select
               value={name}
-              onChange={({ target }) => setName(target.value)}
+              onChange={({ target }) => setName(target?.value)}
             >
-              {result.data.allAuthors.map((a, i) => (
+              {result?.data?.allAuthors?.map((a, i) => (
                 <option key={i} value={a.name}>
                   {a.name}
                 </option>
