@@ -1,6 +1,6 @@
 # Full Stack, osa 8: GraphQL
 
-Kurssin Full Stack Open osan 8 tehtävien palautusrepositorio. Tämän osan aiheena on GraphQL.
+Kurssin [Full Stack Open osan 8](https://fullstackopen.com/osa8) tehtävien palautusrepositorio. Tämän osan aiheena on GraphQL.
 
 Frontissa on edelleen käytössä react-scripts, koska fronttiin liittyvät tehtävät on tehty ennen vite-päivitystä kurssimateriaaleissa.
 
@@ -24,4 +24,5 @@ PORT=4000
 ## Sovelluksen käynnistäminen
 
 Bakcend: `npm run start`
+
 Frontend: `npm run start`
